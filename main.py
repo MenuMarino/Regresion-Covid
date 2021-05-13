@@ -98,7 +98,7 @@ errores = []
 
 def test():
   k = 1
-  while (k < 100):
+  while (k < 1000):
     unidades.append(k)
     grads = [derivada_l2(y_training_ds, h, landa, w, j, x_training_ds) for j in range(p)]
     for i in range(p):
@@ -106,12 +106,10 @@ def test():
         w[i] = w[i] - v[i]
     #err = mse(y_training_ds, h)
     #errores.append(err)
-    print('error: ', mse(y_training_ds, h)) 
     k += 1
 
 test()
-print(h(w, x_training_ds, 1))
-    
-print(unidades)
-print(errores)
-plt.plot(unidades, errores)
+print('error: ', mse(y_training_ds, h))
+# print(unidades)
+# print(errores)
+# plt.plot(unidades, errores)
