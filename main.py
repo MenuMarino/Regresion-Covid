@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 from math import e, floor, ceil
 from datetime import datetime
 
-p: int = 5 # grado del polinomio de nuestro modelo de regresión no lineal
+p: int = 4 # grado del polinomio de nuestro modelo de regresión no lineal
 
-DATE = 0; CONFIRMED = 1; DEATHS = 2; ZONE = 3; ALTITUDE = 6; LAT = 4; LON = 5;
+REGION = 0; REGION_ORIG = 1; DATE = 2; CONFIRMED = 3; DEATHS = 4
 
 filename = 'covid.csv'
 y_training_ds = []
@@ -20,7 +20,7 @@ m: int = -1
 with open(filename) as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
     # n = len(list(csv_reader))
-    n = 9944
+    n = 9934
     training_rows = floor(n*0.7)
     m = training_rows
     testing_rows = ceil(n*0.3)
@@ -28,26 +28,15 @@ with open(filename) as csv_file:
     print('training rows: ', training_rows)
     print('testing rows: ', testing_rows)
     idx: int = 0
+    offset: int = datetime.strptime("01/01/2020", "%m/%d/%Y").timestamp()
+
     for row in csv_reader:
-        if idx != 0: # ignore header
-          # if idx == 5: # only first 5 rows
-          #   break
-          #print(idx, row)
-          # print(row[DATE])
+        if idx != 0:
           marca_de_tiempo: int = datetime.strptime(str(row[DATE]), "%m/%d/%Y").timestamp()
-          # print(marca_de_tiempo)
-          zona: str = row[ZONE]
-          if zona == 'ZONA NORTE':
-            zona = 1.0
-          elif zona == 'ZONA CENTRO':
-            zona = 2.0
-          elif zona == 'ZONA SUR':
-            zona = 3.0
-          else:
-            print('unkown zona')
-            exit(0)
-          new_x = [1, float(marca_de_tiempo), float(zona), float(row[LAT]), float(row[LON])]
-          new_y = float(row[DEATHS])
+          nueva_marca_de_tiempo: float = (marca_de_tiempo - offset)/(3600 * 24)
+          # print(nueva_marca_de_tiempo)
+          new_x = [1, np.log(float(nueva_marca_de_tiempo)), np.log(float(row[REGION])), np.log(float(row[REGION_ORIG]))]
+          new_y = np.log(float(row[DEATHS]))
           if idx <= training_rows:
             #print('training row')
             x_training_ds.append(new_x)
@@ -56,10 +45,6 @@ with open(filename) as csv_file:
             #print('testing row')
             x_testing_ds.append(new_x)
             y_testing_ds.append(new_y)
-          
-          # print rows
-          # print(x_training_ds[idx-1])
-          # print(y_training_ds[idx-1])
         idx += 1
 
 print('total rows after insertion: ', n)
@@ -67,8 +52,8 @@ print('training rows after insertion: ', len(x_training_ds))
 print('testing rows after insertion: ', len(x_testing_ds))
 
 w = np.random.rand(p)
-landa = 0.1
-alfa = 0.001
+landa = 0.00001
+alfa = 0.00001
 gamma = 0.9
 v = [0] * p
 print(w)
@@ -121,6 +106,7 @@ def test():
         w[i] = w[i] - v[i]
     #err = mse(y_training_ds, h)
     #errores.append(err)
+    print('error: ', mse(y_training_ds, h)) 
     k += 1
 
 test()
