@@ -52,8 +52,8 @@ print('training rows after insertion: ', len(x_training_ds))
 print('testing rows after insertion: ', len(x_testing_ds))
 
 w = np.random.rand(p)
-landa = 0.00001
-alfa = 0.00001
+landa = 1
+alfa = 0.003
 gamma = 0.9
 v = [0] * p
 print(w)
@@ -98,18 +98,18 @@ errores = []
 
 def test():
   k = 1
-  while (k < 1000):
+  while (k < 500):
     unidades.append(k)
     grads = [derivada_l2(y_training_ds, h, landa, w, j, x_training_ds) for j in range(p)]
     for i in range(p):
         v[i] = gamma*v[i] + alfa*grads[i]
         w[i] = w[i] - v[i]
-    #err = mse(y_training_ds, h)
-    #errores.append(err)
+    err = mse(y_training_ds, h)
+    errores.append(err)
     k += 1
 
 test()
 print('error: ', mse(y_training_ds, h))
 # print(unidades)
 # print(errores)
-# plt.plot(unidades, errores)
+plt.plot(unidades, errores)
