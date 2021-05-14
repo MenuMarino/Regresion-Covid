@@ -16,6 +16,7 @@ y_testing_ds = []
 
 n: int = -1
 m: int = -1
+q: int = -1
 
 with open(filename) as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
@@ -24,6 +25,7 @@ with open(filename) as csv_file:
     training_rows = floor(n*0.7)
     m = training_rows
     testing_rows = ceil(n*0.3)
+    q = testing_rows
     print('total rows: ', n)
     print('training rows: ', training_rows)
     print('testing rows: ', testing_rows)
@@ -52,8 +54,8 @@ print('training rows after insertion: ', len(x_training_ds))
 print('testing rows after insertion: ', len(x_testing_ds))
 
 w = np.random.rand(p)
-landa = 1
-alfa = 0.003
+landa = 1.5
+alfa = 0.0025
 gamma = 0.9
 v = [0] * p
 print(w)
@@ -98,7 +100,7 @@ errores = []
 
 def test():
   k = 1
-  while (k < 500):
+  while (k < 200):
     unidades.append(k)
     grads = [derivada_l2(y_training_ds, h, landa, w, j, x_training_ds) for j in range(p)]
     for i in range(p):
@@ -106,6 +108,7 @@ def test():
         w[i] = w[i] - v[i]
     err = mse(y_training_ds, h)
     errores.append(err)
+    print(err)
     k += 1
 
 test()
@@ -113,3 +116,14 @@ print('error: ', mse(y_training_ds, h))
 # print(unidades)
 # print(errores)
 plt.plot(unidades, errores)
+
+for i in range(q-1):
+    row = x_testing_ds[i]
+    true = y_testing_ds[i]
+    print('true: ', e**true)
+    print(e**h(w, x_testing_ds, i))
+
+   # 1.48 landa 1 alfa 0.003
+   # 1.47 landa 1.5  """"
+   # 1.466 landa 1.5 0.0025
+
