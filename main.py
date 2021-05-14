@@ -3,6 +3,8 @@ import csv
 import matplotlib.pyplot as plt
 from math import e, floor, ceil
 from datetime import datetime
+from numpy.random import MT19937
+from numpy.random import RandomState, SeedSequence
 
 p: int = 4 # grado del polinomio de nuestro modelo de regresión no lineal
 
@@ -53,7 +55,10 @@ print('total rows after insertion: ', n)
 print('training rows after insertion: ', len(x_training_ds))
 print('testing rows after insertion: ', len(x_testing_ds))
 
-w = np.random.rand(p)
+rs = RandomState(MT19937(SeedSequence(123456789))); rs.rand(4)
+w = rs.rand(p)
+print(w)
+exit(0)
 landa = 1.5
 alfa = 0.0025
 gamma = 0.9
