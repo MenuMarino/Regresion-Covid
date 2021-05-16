@@ -3,9 +3,8 @@ import csv
 import matplotlib.pyplot as plt
 from math import e, floor, ceil
 from datetime import datetime
-from numpy.random import MT19937
-from numpy.random import RandomState, SeedSequence
-from time import time
+import time
+
 p: int = 4 # grado del polinomio de nuestro modelo de regresión no lineal
 
 REGION = 0; REGION_ORIG = 1; DATE = 2; CONFIRMED = 3; DEATHS = 4
@@ -55,13 +54,10 @@ print('total rows after insertion: ', n)
 print('training rows after insertion: ', len(x_training_ds))
 print('testing rows after insertion: ', len(x_testing_ds))
 
-#rs = RandomState(MT19937(SeedSequence(123456789))); rs.rand(4)
-#w = rs.rand(p)
+# rs = RandomState(MT19937(SeedSequence(123456789))); rs.rand(4)
 w = np.random.rand(p)
-print("TERMINOS: ",w)
-exit(0)
-landa = 1.5
-alfa = 0.0025
+landa = 0.0015
+alfa = 0.0000025
 gamma = 0.9
 v = [0] * p
 print(w)
@@ -71,7 +67,10 @@ def h(w, x, j):
   # x: vector de caracteristicas
   # return: valor que predice el modelo 'h' para el j-esimo data point 
   return np.sum([w[i]*(x[j][i]**i) for i in range(p)]) 
-  
+
+def rms(vec):
+  return np.sqrt((np.sum([vec[i]**2 for i in range(p)]))/(p))
+
 # true = y_ds
 # pred = h(x_training_ds)
 def mse(true, h):
@@ -104,38 +103,45 @@ def derivada_l1_regularizada(true, h, l, w, j, x):
 unidades = []
 errores = []
 
+epsilon = pow(10, -8)
+
 def test():
   k = 1
-  while (k < 1000):
+  e_w = [0] * (p)
+  while (k < 100):
     unidades.append(k)
+    
     grads = [derivada_l2(y_training_ds, h, landa, w, j, x_training_ds) for j in range(p)]
+    rms_grads = rms(grads)
+    parameter = [(-(alfa/rms_grads))*grads[i] for i in range(p)]
+    e_w = [gamma*e_w[i] + (1-gamma)*parameter[i]**2 for i in range(p)]
+    delta = [np.sqrt(e_w[i]+epsilon) for i in range(p)]
+
     for i in range(p):
-        v[i] = gamma*v[i] + alfa*grads[i]
-        w[i] = w[i] - v[i]
+      w[i] = w[i] - delta[i]*grads[i]
+
     err = mse(y_training_ds, h)
     errores.append(err)
-    #print(err)
+    # print(err)
     k += 1
 
-
-start_time = time()
+start = time.time()
 test()
-elapsed_time = time() - start_time
-
+end = time.time()
+print('lambda: ', landa)
+print('alfa: ', alfa)
+print('time: ', end - start)
 print('error: ', mse(y_training_ds, h))
 # print(unidades)
 # print(errores)
-plt.plot(unidades, errores)
+# plt.plot(unidades, errores)
 
-
-'''
-for i in range(q-1):
-    row = x_testing_ds[i]
-    true = y_testing_ds[i]
-    print('true: ', e**true)
-    print(e**h(w, x_testing_ds, i))
+# for i in range(q-1):
+#     row = x_testing_ds[i]
+#     true = y_testing_ds[i]
+#     print('true: ', e**true)
+#     print(e**h(w, x_testing_ds, i))
 
    # 1.48 landa 1 alfa 0.003
    # 1.47 landa 1.5  """"
    # 1.466 landa 1.5 0.0025
-'''
