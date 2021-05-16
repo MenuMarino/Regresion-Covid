@@ -56,8 +56,8 @@ print('testing rows after insertion: ', len(x_testing_ds))
 
 # rs = RandomState(MT19937(SeedSequence(123456789))); rs.rand(4)
 w = np.random.rand(p)
-landa = 0.0015
-alfa = 0.0000025
+landa = 1.5
+alfa = 0.25
 gamma = 0.9
 v = [0] * p
 print(w)
@@ -107,18 +107,23 @@ epsilon = pow(10, -8)
 
 def test():
   k = 1
-  e_w = [0] * (p)
+  mt = [0] * (p)
+  vt = [0] * (p)
+  mt_p = [0] * (p)
+  b1 = 0.9
+  b2 = 0.999
+
   while (k < 100):
     unidades.append(k)
     
-    grads = [derivada_l2(y_training_ds, h, landa, w, j, x_training_ds) for j in range(p)]
-    rms_grads = rms(grads)
-    parameter = [(-(alfa/rms_grads))*grads[i] for i in range(p)]
-    e_w = [gamma*e_w[i] + (1-gamma)*parameter[i]**2 for i in range(p)]
-    delta = [np.sqrt(e_w[i]+epsilon) for i in range(p)]
-
+    grads = [derivada_l1_regularizada(y_training_ds, h, landa, w, j, x_training_ds) for j in range(p)]
+    mt = [b1*mt[i] + (1-b1)*grads[i] for i in range(p)]   
+    vt = [b2*vt[i] + (1-b2)*(grads[i]**2)for i in range(p)]
+    mt_p = [mt[i]/((1-b1**k)) for i in range(p)]
+    vt_p = [vt[i]/((1-b2**k)) for i in range(p)]
+      
     for i in range(p):
-      w[i] = w[i] - delta[i]*grads[i]
+      w[i] = w[i] - (((alfa)/(np.sqrt(vt_p[i])+epsilon))*mt_p[i])
 
     err = mse(y_training_ds, h)
     errores.append(err)
