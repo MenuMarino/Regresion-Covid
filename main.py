@@ -59,9 +59,8 @@ print('testing rows after insertion: ', len(x_testing_ds))
 #w = rs.rand(p)
 w = np.random.rand(p)
 print("TERMINOS: ",w)
-exit(0)
-landa = 1.5
-alfa = 0.0025
+landa = 0.015
+alfa = 0.0005
 gamma = 0.9
 v = [0] * p
 print(w)
@@ -106,12 +105,11 @@ errores = []
 
 def test():
   k = 1
-  while (k < 1000):
+  while (k < 100):
     unidades.append(k)
-    grads = [derivada_l2(y_training_ds, h, landa, w, j, x_training_ds) for j in range(p)]
+    grads = [derivada_l2_regularizada(y_training_ds, h, landa, w, j, x_training_ds) for j in range(p)]
     for i in range(p):
-        v[i] = gamma*v[i] + alfa*grads[i]
-        w[i] = w[i] - v[i]
+      w[i] = w[i] - alfa*grads[i]
     err = mse(y_training_ds, h)
     errores.append(err)
     #print(err)
@@ -122,6 +120,9 @@ start_time = time()
 test()
 elapsed_time = time() - start_time
 
+print('lambda: ', landa)
+print('alfa: ', alfa)
+print('time: ', elapsed_time)
 print('error: ', mse(y_training_ds, h))
 # print(unidades)
 # print(errores)
