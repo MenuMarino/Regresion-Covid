@@ -39,7 +39,7 @@ with open(filename) as csv_file:
           marca_de_tiempo: int = datetime.strptime(str(row[DATE]), "%m/%d/%Y").timestamp()
           nueva_marca_de_tiempo: float = (marca_de_tiempo - offset)/(3600 * 24)
           # print(nueva_marca_de_tiempo)
-          new_x = [1, np.log(float(nueva_marca_de_tiempo)), np.log(float(row[REGION])), np.log(float(row[REGION_ORIG]))]
+          new_x = [0, np.log(float(nueva_marca_de_tiempo)), np.log(float(row[REGION])), np.log(float(row[REGION_ORIG]))]
           new_y = np.log(float(row[DEATHS]))
           if idx <= training_rows:
             #print('training row')
