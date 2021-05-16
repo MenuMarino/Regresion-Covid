@@ -5,7 +5,7 @@ from math import e, floor, ceil
 from datetime import datetime
 from numpy.random import MT19937
 from numpy.random import RandomState, SeedSequence
-
+from time import time
 p: int = 4 # grado del polinomio de nuestro modelo de regresión no lineal
 
 REGION = 0; REGION_ORIG = 1; DATE = 2; CONFIRMED = 3; DEATHS = 4
@@ -55,9 +55,10 @@ print('total rows after insertion: ', n)
 print('training rows after insertion: ', len(x_training_ds))
 print('testing rows after insertion: ', len(x_testing_ds))
 
-rs = RandomState(MT19937(SeedSequence(123456789))); rs.rand(4)
-w = rs.rand(p)
-print(w)
+#rs = RandomState(MT19937(SeedSequence(123456789))); rs.rand(4)
+#w = rs.rand(p)
+w = np.random.rand(p)
+print("TERMINOS: ",w)
 exit(0)
 landa = 1.5
 alfa = 0.0025
@@ -105,7 +106,7 @@ errores = []
 
 def test():
   k = 1
-  while (k < 200):
+  while (k < 1000):
     unidades.append(k)
     grads = [derivada_l2(y_training_ds, h, landa, w, j, x_training_ds) for j in range(p)]
     for i in range(p):
@@ -113,15 +114,21 @@ def test():
         w[i] = w[i] - v[i]
     err = mse(y_training_ds, h)
     errores.append(err)
-    print(err)
+    #print(err)
     k += 1
 
+
+start_time = time()
 test()
+elapsed_time = time() - start_time
+
 print('error: ', mse(y_training_ds, h))
 # print(unidades)
 # print(errores)
 plt.plot(unidades, errores)
 
+
+'''
 for i in range(q-1):
     row = x_testing_ds[i]
     true = y_testing_ds[i]
@@ -131,4 +138,4 @@ for i in range(q-1):
    # 1.48 landa 1 alfa 0.003
    # 1.47 landa 1.5  """"
    # 1.466 landa 1.5 0.0025
-
+'''
