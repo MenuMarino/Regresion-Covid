@@ -111,7 +111,7 @@ def test():
   while (k < 100):
     unidades.append(k)
     
-    grads = [derivada_l2(y_training_ds, h, landa, w, j, x_training_ds) for j in range(p)]
+    grads = [derivada_l2_regularizada(y_training_ds, h, landa, w, j, x_training_ds) for j in range(p)]
     rms_grads = rms(grads)
     parameter = [(-(alfa/rms_grads))*grads[i] for i in range(p)]
     e_w = [gamma*e_w[i] + (1-gamma)*parameter[i]**2 for i in range(p)]
