@@ -112,13 +112,9 @@ def test():
     unidades.append(k)
     
     grads = [derivada_l2_regularizada(y_training_ds, h, landa, w, j, x_training_ds) for j in range(p)]
-    rms_grads = rms(grads)
-    parameter = [(-(alfa/rms_grads))*grads[i] for i in range(p)]
-    e_w = [gamma*e_w[i] + (1-gamma)*parameter[i]**2 for i in range(p)]
-    delta = [np.sqrt(e_w[i]+epsilon) for i in range(p)]
-
     for i in range(p):
-      w[i] = w[i] - delta[i]*grads[i]
+        v[i] = gamma*v[i] + alfa*grads[i]
+        w[i] = w[i] - v[i]
 
     err = mse(y_training_ds, h)
     errores.append(err)
